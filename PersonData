@@ -1,0 +1,134 @@
+using System;
+using System.Collections.Generic;
+
+namespace AddressInput {
+
+  public class PersonData : IComparable  {
+    private string name;
+    public DateTime DateOfBirth { get; }
+    public char gender { get; set; }
+    public string pet;
+
+    public int Age {
+            get {
+                int today_year = DateTime.Today.Year;
+                int birth_year = DateOfBirth.Year;
+                int today_day_of_year = DateTime.Today.DayOfYear;
+                int birth_day_of_year = DateOfBirth.DayOfYear;
+                int age = birth_day_of_year <= today_day_of_year
+                    ? today_year - birth_year
+                    : today_year - birth_year - 1;
+                return age;
+            }
+        }
+
+    public PersonData(string s, DateTime date) {
+        name = s; 
+        DateOfBirth = date;
+    }
+
+      public override string ToString() => name + " born on " + DateOfBirth;
+
+      // Compare with another object, return -1, 0 or 1
+      public int CompareTo(object obj) {
+        if (obj == null) return 1;
+        // Cast object to be the PersonData type
+        PersonData peep = obj as PersonData;
+        if (peep ==  null)
+           throw new ArgumentException("Object is not a Person");
+        // First compare the names
+        var cmp = name.CompareTo(peep.name);
+        if(cmp != 0) { // if not equals return that
+            return cmp; 
+        }
+          else { // Names are the same, compare on age instead
+              var cmp2 = -DateOfBirth.CompareTo(peep.DateOfBirth);
+              return cmp2;
+        }   
+      }
+
+    public class BubbleList<T>  where T : IComparable  {
+        T[] data = new T[100];
+        public int size { get; private set; }
+        public void Add(T item) => data[size++] = item;
+        public T getItem(int i) => data[i];
+
+        public void sort() {
+            int last = size - 1;
+            bool sorted = false;
+            while(!sorted) {
+                sorted = true;
+                for(int index =0; index < last; ++index) {
+                    if( data[index].CompareTo(data[index+1]) > 0 ) {
+                        Console.WriteLine("swapping " + index +" and " + (index+1));
+                        T tmp = data[index+1];
+                        data[index+1] = data[index];
+                        data[index] = tmp;
+                        sorted = false;
+                    }
+                }
+                last = last-1;
+            }
+        }
+    }
+    public static void Main (string[] args) {      
+        BubbleList<PersonData> students = new BubbleList<PersonData>();
+        students.Add(new PersonData("Bob", new DateTime(2015, 12, 31) ));
+        students.Add(new PersonData("Bob", new DateTime(2015, 1, 1) ));
+        students.Add(new PersonData("Alice", new DateTime(2015, 12, 31)));
+        // for(int i=0; i< students.size; ++i) {
+        //     var item = students.getItem(i);
+        //   Console.WriteLine(item);
+        // }
+        // foreach(var s in students) {
+        //   Console.WriteLine(s);
+        // }
+        Console.WriteLine("\nNow sorted\n");
+        students.sort();
+
+        // foreach(var s in students) {
+        //   Console.WriteLine(s);
+        // }
+        for(int i=0; i< students.size; ++i) {
+            var item = students.getItem(i);
+          Console.WriteLine(item);
+        }
+
+        
+        }
+  }
+
+    public readonly struct Fraction
+    {
+        private readonly int num;
+        private readonly int den;
+
+        public Fraction(int numerator, int denominator)
+        {
+            if (denominator == 0)
+            {
+                throw new ArgumentException("Denominator cannot be zero.", nameof(denominator));
+            }
+            num = numerator;
+            den = denominator;
+        }
+
+       public static Fraction operator -(Fraction a) => new Fraction(-a.num, a.den);
+
+       public static Fraction operator +(Fraction a, Fraction b)
+        => new Fraction(a.num * b.den + b.num * a.den, a.den * b.den);
+
+        public static bool operator <(Fraction a, Fraction b) => 
+            a.num * b.den < b.num * a.den;
+
+        public static bool operator >(Fraction a, Fraction b) => 
+            a.num * b.den > b.num * a.den;
+        
+        public override string ToString() => $"{num} / {den}";
+
+        // public override string ToString() {
+        //     return $"{num} / {den}";
+        // }
+    }
+
+}
