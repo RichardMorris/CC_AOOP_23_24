@@ -1,0 +1,79 @@
+using System;
+class TrafficProgram {
+
+    public enum LightState { RED, AMBER, GREEN, RED_AND_AMBER }
+
+    public enum GreenManState { ON, OFF, Flashing }
+
+    public class TrafficLights {
+        LightState currentState;
+
+        public TrafficLights() { currentState = LightState.RED; } 
+        
+        public void ChangeStateTo(LightState state) {
+            currentState = state;
+            Console.WriteLine("Traffic light state "+currentState);
+        }        
+    }
+
+    public class GreenMan {
+        GreenManState currentState = GreenManState.OFF;
+        public void ChangeState(GreenManState state) {
+            currentState = state;
+             Console.WriteLine("Green man state "+currentState);
+        }
+    }
+
+    public class ButtonBox {
+        Controller contoller;
+        public ButtonBox(Controller cont) {
+            contoller = cont;
+        }
+        // Method called when the user presses the button
+        public void pressButton() {
+            contoller.requestCrossing();
+        }
+    }
+
+    public class Controller {
+        TrafficLights light = new TrafficLights();
+        GreenMan man = new GreenMan();
+        ButtonBox box;
+
+        public Controller() {
+            box = new ButtonBox(this);
+        }
+
+        // Main "BUSSINESS" logic here 
+        public void requestCrossing() {
+            // Wait 1 sec
+            System.Threading.Thread.Sleep(1000);
+            light.ChangeStateTo(LightState.AMBER);
+            System.Threading.Thread.Sleep(1000);
+            light.ChangeStateTo(LightState.RED);
+            System.Threading.Thread.Sleep(1000);
+            man.ChangeState(GreenManState.ON);
+            System.Threading.Thread.Sleep(1000);
+            man.ChangeState(GreenManState.Flashing);
+            System.Threading.Thread.Sleep(1000);
+            man.ChangeState(GreenManState.OFF);
+            System.Threading.Thread.Sleep(1000);
+            light.ChangeStateTo(LightState.RED_AND_AMBER);
+            System.Threading.Thread.Sleep(1000);
+            light.ChangeStateTo(LightState.GREEN);
+        }
+
+        
+        public ButtonBox bb { get => box; }
+    }
+    
+
+  public static void Main (string[] args) {
+    TrafficProgram myprog = new TrafficProgram();
+      Controller cont = new Controller();
+
+      Console.WriteLine("Press a key to trigger lights");
+      Console.ReadKey();
+      cont.bb.pressButton();
+  }
+}
